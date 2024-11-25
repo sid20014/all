@@ -529,90 +529,77 @@ void q8{
 }
 void q9{
         #include <iostream>
-    #include <string>
-    using namespace std;
+#include <string>
 
-    // Function to simulate the Turing Machine
-    bool simulateTuringMachine_abc(string tape) {
-        int head = 0; // Head pointer
-        int state = 0; // Initial state
+using namespace std;
 
-        while (true) {
-            switch (state) {
-                case 0: // Replace first 'a' with 'X'
-                    if (tape[head] == 'a') {
-                        tape[head] = 'X';
-                        head++;
-                        state = 1;
-                    } else if (tape[head] == 'Y' || tape[head] == 'Z' || tape[head] == '#') {
-                        state = 4; // Verify all symbols are marked
-                    } else {
-                        return false; // Invalid input
-                    }
-                    break;
+bool turing_machine(string input) {
+    int a_count = 0, b_count = 0, c_count = 0;
+    int i = 0;
 
-                case 1: // Find the first 'b'
-                    if (tape[head] == 'b') {
-                        tape[head] = 'Y';
-                        head++;
-                        state = 2;
-                    } else if (tape[head] == 'a' || tape[head] == 'X') {
-                        head++;
-                    } else {
-                        return false; // Invalid input
-                    }
-                    break;
-
-                case 2: // Find the first 'c'
-                    if (tape[head] == 'c') {
-                        tape[head] = 'Z';
-                        head--;
-                        state = 3;
-                    } else if (tape[head] == 'b' || tape[head] == 'Y') {
-                        head++;
-                    } else {
-                        return false; // Invalid input
-                    }
-                    break;
-
-                case 3: // Move back to the first 'a' or '#' to restart
-                    if (tape[head] == 'X') {
-                        head--;
-                    } else if (tape[head] == '#') {
-                        head++;
-                        state = 0;
-                    } else {
-                        head--;
-                    }
-                    break;
-
-                case 4: // Verify all symbols are marked
-                    if (tape[head] == 'X' || tape[head] == 'Y' || tape[head] == 'Z') {
-                        head++;
-                    } else if (tape[head] == '#') {
-                        return true; // Accept
-                    } else {
-                        return false; // Reject
-                    }
-                    break;
-            }
-        }
-    }
-
-    int main() {
-        string tape;
-        cout << "Enter string for L = {a^n b^n c^n | n > 0}: ";
-        cin >> tape;
-        tape += "#"; // Add blank symbol to the tape
-
-        if (simulateTuringMachine_abc(tape)) {
-            cout << "String is accepted.\n";
+    while (i < input.length()) {
+        if (input[i] == 'a') {
+            a_count++;
+            i++;
+        } else if (input[i] == 'b' && a_count > b_count) {
+            b_count++;
+            i++;
+        } else if (input[i] == 'c' && b_count > c_count) {
+            c_count++;
+            i++;
         } else {
-            cout << "String is rejected.\n";
+            return false; // Invalid input
         }
-
-        return 0;
     }
+
+    return a_count == b_count && b_count == c_count;
+}
+
+int main() {
+    string input;
+    cout << "Enter the input string: ";
+    cin >> input;
+
+    if (turing_machine(input)) {
+        cout << "Accepted" << endl;
+    } else {
+        cout << "Rejected" << endl;
+    }
+
+    return 0;
+}
 
 }
 void q10{
+    #include <iostream>
+ #include <string>
+ using namespace std;
+ string incrementBinary(string tape) {
+    int head = tape.length() - 1; // Start at the rightmost bit (LSB)
+    while (head >= 0) {
+        if (tape[head] == '0') {
+            // If the current bit is 0, change it to 1 and halt
+            tape[head] = '1';
+            return tape;
+        } else if (tape[head] == '1') {
+            // If the current bit is 1, change it to 0 and move left
+            tape[head] = '0';
+        } else {
+            // Invalid character in the tape
+            throw invalid_argument("Invalid binary number");
+        }
+        head--; // Move the head left
+    }
+    return "1" + tape;
+ }
+ int main() {
+    string testCases[] = {"0", "1", "10", "11", "101", "111", "1000", ""};
+    for (const string& test : testCases) {
+        try {
+cout << "Input: \"" << test << "\" -> Output: \"" << incrementBinary(test) << "\"" << endl;
+ } catch (const invalid_argument& e) {
+ cout << "Input: \"" << test << "\" -> Error: " << e.what() << endl;
+ }
+ }
+ return 0;
+ }}
